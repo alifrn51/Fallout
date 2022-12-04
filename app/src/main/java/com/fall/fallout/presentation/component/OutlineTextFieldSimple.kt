@@ -105,18 +105,18 @@ fun OutlineTextFieldSimple(
                 unfocusedBorderColor =  MaterialTheme.colors.secondary),
             shape = RoundedCornerShape(CARD_ITEM_ROUNDED)
         )
+        Text(
+            text = errorMessage,
+            color = MaterialTheme.colors.error,
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 8.dp)
+            //.offset(y = (-0).dp)
+        )
+        /*AnimatedVisibility(visible = errorMessage.isNotEmpty()) {
 
-        AnimatedVisibility(visible = errorMessage.isNotEmpty()) {
-            Text(
-                text = errorMessage,
-                color = MaterialTheme.colors.error,
-                style = MaterialTheme.typography.caption,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp)
-                //.offset(y = (-0).dp)
-            )
-        }
+        }*/
 
 
     }

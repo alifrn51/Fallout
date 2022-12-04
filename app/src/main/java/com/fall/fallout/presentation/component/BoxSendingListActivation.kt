@@ -10,12 +10,18 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.fall.fallout.R
 import com.fall.fallout.domain.model.Person
 import com.fall.fallout.ui.theme.*
@@ -23,7 +29,8 @@ import com.fall.fallout.ui.theme.*
 @Composable
 fun BoxSendingListActivation(
     modifier: Modifier = Modifier,
-    listPerson: List<Person>
+    listPerson: List<Person>,
+    switchON: MutableState<Boolean>
 ) {
     Card(
         modifier = modifier
@@ -42,7 +49,8 @@ fun BoxSendingListActivation(
                 CustomSwitch(
                     scale = 1f,
                     width = 52.dp,
-                    height = 30.dp
+                    height = 30.dp,
+                    switchON = switchON
                 )
             }
 
@@ -53,15 +61,34 @@ fun BoxSendingListActivation(
 
             LazyRow {
                 items(listPerson) { person ->
-                    Image(
+
+                    Column(
                         modifier = Modifier
-                            .padding(end = BETWEEN_PADDING)
-                            .size(40.dp)
-                            .clip(shape = RoundedCornerShape(100.dp)),
-                        painter = person.image,
-                        contentDescription = "person",
-                        contentScale = ContentScale.Crop
-                    )
+                            .padding(end = BETWEEN_PADDING),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Image(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clip(shape = RoundedCornerShape(100.dp)),
+                            painter = person.image,
+                            contentDescription = "person",
+                            contentScale = ContentScale.Crop
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            modifier = Modifier.width(40.dp),
+                            text = "${person.firstName} ${person.lastName}",
+                            style = MaterialTheme.typography.overline,
+                            fontSize = 12.sp,
+                            textAlign = TextAlign.Center,
+                            color = Color.LightGray,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                        )
+                    }
+
                 }
             }
 
@@ -76,7 +103,7 @@ fun BoxSendingListActivation(
 @Composable
 fun BoxSendingListActivationPreview() {
 
-    FalloutTheme {
+    /*FalloutTheme {
         BoxSendingListActivation(
             listPerson = listOf(
                 Person(
@@ -89,7 +116,7 @@ fun BoxSendingListActivationPreview() {
                 ),
                 Person(
                     firstName = "Ali",
-                    lastName = "Frn",
+                    lastName = "Frnfdf",
                     phoneNumber = "09155524447",
                     image = painterResource(
                         id = R.drawable.sample
@@ -105,5 +132,5 @@ fun BoxSendingListActivationPreview() {
                 ),
             )
         )
-    }
+    }*/
 }

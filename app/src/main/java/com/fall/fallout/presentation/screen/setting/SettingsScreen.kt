@@ -18,9 +18,14 @@ import com.fall.fallout.domain.model.Setting
 import com.fall.fallout.presentation.component.ItemSetting
 import com.fall.fallout.presentation.component.ToolbarApplication
 import com.fall.fallout.ui.theme.FalloutTheme
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+@Destination()
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(
+    navigator: DestinationsNavigator,
+) {
 
     var itemSettings = listOf(
         Setting(title = "Cancellation Time", icon = Icons.Outlined.Timer),
@@ -38,7 +43,9 @@ fun SettingsScreen() {
             modifier = Modifier.fillMaxSize(),
 
             ) {
-            ToolbarApplication(title = "Settings", modifier = Modifier.fillMaxWidth())
+            ToolbarApplication(title = "Settings", modifier = Modifier.fillMaxWidth()){
+                navigator.popBackStack()
+            }
 
 
             LazyColumn {
@@ -63,6 +70,6 @@ fun SettingsScreen() {
 @Composable
 fun SettingsScreenPreview() {
     FalloutTheme {
-        SettingsScreen()
+        //SettingsScreen()
     }
 }

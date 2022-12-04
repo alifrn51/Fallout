@@ -9,68 +9,75 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.fall.fallout.ui.theme.*
 
 @Composable
 fun EditPersonDialog(
     modifier: Modifier = Modifier,
     title: String = "Edit Person",
-    onValueChange: (String) -> Unit,
+    setShowDialog: (Boolean) -> Unit,
+    onValueChangeFullName: (String) -> Unit,
+    onValueChangePhoneNumber: (String) -> Unit,
     description: String = "Write the full name and phone number of your person to report falling."
 ) {
 
-    Card(
-        shape = RoundedCornerShape(CARD_DIALOG_ROUNDED)
-    ) {
+    Dialog(onDismissRequest = { setShowDialog(false) }) {
 
-        Column(
-            modifier
-                .padding(LARGE_PADDING)
+        Card(
+            shape = RoundedCornerShape(CARD_DIALOG_ROUNDED)
         ) {
 
-            Text(text = title, style = MaterialTheme.typography.h6)
+            Column(
+                modifier
+                    .padding(LARGE_PADDING)
+            ) {
 
-            Spacer(modifier = Modifier.height(BETWEEN_PADDING))
+                Text(text = title, style = MaterialTheme.typography.h6)
 
-            Text(text = description, style = MaterialTheme.typography.body1)
+                Spacer(modifier = Modifier.height(BETWEEN_PADDING))
 
-
-            Spacer(modifier = Modifier.height(LARGE_PADDING))
-
-            OutlineTextFieldSimple(
-                title = "Full name",
-                value = "",
-                onValueChange = onValueChange,
-                errorForLength = "Error"
-            )
-
-            Spacer(modifier = Modifier.height(BETWEEN_PADDING))
-
-            OutlineTextFieldSimple(
-                title = "Phone number",
-                value = "",
-                onValueChange = onValueChange,
-                errorForLength = "Error"
-            )
-
-            Spacer(modifier = Modifier.height(EXTRA_LARGE_PADDING))
-            Row {
+                Text(text = description, style = MaterialTheme.typography.body1)
 
 
+                Spacer(modifier = Modifier.height(LARGE_PADDING))
 
-                Button(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(SIZE_HEIGHT_BUTTON),
-                    onClick = { /*TODO*/ },
-                    shape = RoundedCornerShape(CARD_ITEM_ROUNDED),
-                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary)
-                ) {
-                    Text(text = "Confirm", color = Black)
+                OutlineTextFieldSimple(
+                    title = "Full name",
+                    value = "",
+                    onValueChange = onValueChangeFullName,
+                    errorForLength = "Error"
+                )
+
+                Spacer(modifier = Modifier.height(BETWEEN_PADDING))
+
+                OutlineTextFieldSimple(
+                    title = "Phone number",
+                    value = "",
+                    onValueChange = onValueChangePhoneNumber,
+                    errorForLength = "Error"
+                )
+
+                Spacer(modifier = Modifier.height(EXTRA_LARGE_PADDING))
+                Row {
+
+
+
+                    Button(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(SIZE_HEIGHT_BUTTON),
+                        onClick = { /*TODO*/ },
+                        shape = RoundedCornerShape(CARD_ITEM_ROUNDED),
+                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary)
+                    ) {
+                        Text(text = "Confirm", color = Black)
+                    }
+
                 }
 
-            }
 
+            }
 
         }
 
@@ -86,6 +93,6 @@ fun EditPersonDialogPreview() {
     FalloutTheme {
 
         var ali = ""
-        EditPersonDialog(onValueChange = { v -> ali = v })
+       // EditPersonDialog(onValueChange = { v -> ali = v })
     }
 }

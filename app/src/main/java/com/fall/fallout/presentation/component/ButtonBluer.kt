@@ -26,11 +26,12 @@ import androidx.compose.ui.text.TextStyle as TextStyle1
 fun ButtonBluer(
     icon: ImageVector,
     title: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    clickable:()-> Unit
 ) {
 
     Card(
-        modifier = modifier.height(SIZE_HEIGHT_BUTTON).clickable {  },
+        modifier = modifier.height(SIZE_HEIGHT_BUTTON).clickable {clickable()  },
         shape = RoundedCornerShape(CARD_ITEM_ROUNDED),
         elevation = 2.dp
     ) {
@@ -90,6 +91,6 @@ fun ButtonBluerPreview() {
 
     FalloutTheme {
 
-        ButtonBluer(icon = Icons.Default.Person, title = "Person List")
+        ButtonBluer(icon = Icons.Default.Person, title = "Person List"){}
     }
 }

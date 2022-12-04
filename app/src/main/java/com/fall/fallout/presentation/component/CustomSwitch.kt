@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -38,12 +39,10 @@ fun CustomSwitch(
     uncheckedTrackColor: Color = Black,
     checkedBackgroundSwitch: Color = MaterialTheme.colors.secondary,
     uncheckedBackgroundSwitch: Color = White,
-    gapBetweenThumbAndTrackEdge: Dp = 6.dp
+    gapBetweenThumbAndTrackEdge: Dp = 6.dp,
+    switchON: MutableState<Boolean>
 ) {
 
-    val switchON = remember {
-        mutableStateOf(false) // Initially the switch is ON
-    }
 
     val thumbRadius = (height / 2) - gapBetweenThumbAndTrackEdge
 
@@ -72,13 +71,12 @@ fun CustomSwitch(
         drawRoundRect(
             color = if (switchON.value) checkedBackgroundSwitch else uncheckedBackgroundSwitch,
             cornerRadius = CornerRadius(x = cornerRadius.toPx(), y = cornerRadius.toPx()),
-
         )
         // Track
         drawRoundRect(
-            color = if (switchON.value) checkedBackgroundSwitch else uncheckedTrackColor,
+            color = if (switchON.value) checkedTrackColor else uncheckedTrackColor,
             cornerRadius = CornerRadius(x = cornerRadius.toPx(), y = cornerRadius.toPx()),
-            style = Stroke(width = strokeWidth.toPx())
+            style =  Stroke(width = strokeWidth.toPx())
         )
 
         // Thumb
@@ -98,6 +96,6 @@ fun CustomSwitch(
 @Composable
 fun CustomSwitchPreview() {
     FalloutTheme {
-        CustomSwitch()
+        //CustomSwitch()
     }
 }

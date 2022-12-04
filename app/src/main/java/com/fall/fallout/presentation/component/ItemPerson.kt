@@ -5,10 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
@@ -33,16 +30,16 @@ fun ItemPerson(
     fullName: String,
     phoneNumber: String,
     image: Painter,
-    onClickDeleteItemPerson: () -> Unit = {},
-    onClickEditItemPerson: () -> Unit = {}
+    onClickDeleteItemPerson: () -> Unit,
+    onClickEditItemPerson: () -> Unit
 ) {
 
 
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(start = SMALL_PADDING, end = SMALL_PADDING, bottom = BETWEEN_PADDING),
-
+            .padding(start = SMALL_PADDING, end = SMALL_PADDING, bottom = BETWEEN_PADDING)
+            .clickable { },
         shape = RoundedCornerShape(CARD_ITEM_ROUNDED)
     ) {
 
@@ -82,27 +79,31 @@ fun ItemPerson(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = "Edit",
-                    tint = MaterialTheme.colors.secondary,
-                    modifier = Modifier
-                        .padding(2.dp)
-                        .clickable {
-                            onClickEditItemPerson()
-                        }
-                )
+                IconButton(onClick = {
+                    onClickEditItemPerson() }) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit",
+                        tint = MaterialTheme.colors.secondary,
+                        modifier = Modifier
+                            .padding(2.dp)
+                    )
+                }
+
                 Spacer(modifier = Modifier.width(4.dp))
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete",
-                    tint = MaterialTheme.colors.secondary,
-                    modifier = Modifier
-                        .padding(2.dp)
-                        .clickable {
-                            onClickDeleteItemPerson()
-                        }
-                )
+
+                IconButton(onClick = {
+                    onClickDeleteItemPerson()
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Delete",
+                        tint = MaterialTheme.colors.secondary,
+                        modifier = Modifier
+                            .padding(2.dp)
+                    )
+                }
+
             }
         }
 
@@ -119,10 +120,10 @@ fun ItemPersonPreview() {
 
     FalloutTheme {
 
-        ItemPerson(
+        /*ItemPerson(
             fullName = "Full name",
             phoneNumber = "09397859149",
             image = painterResource(id = R.drawable.sample)
-        )
+        )*/
     }
 }
