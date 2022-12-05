@@ -34,7 +34,7 @@ fun ToolbarApplication(
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "ArrowBack",
-                tint = MaterialTheme.colors.secondary
+                tint = MaterialTheme.colors.primary
             )
         }
 

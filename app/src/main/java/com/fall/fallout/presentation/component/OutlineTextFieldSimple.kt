@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -33,15 +34,17 @@ fun OutlineTextFieldSimple(
     label: String = "",
     errorForLength : String,
     minLength:Int = 2,
+    isEnable: Boolean = false,
     isIconClearFiled: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
-    isValid: (Boolean) -> Unit = {}
+    isValid: (Boolean) -> Unit
 ) {
 
     var errorMessage by remember {
         mutableStateOf("")
     }
+
 
     isValid(errorMessage.isEmpty() && value.isNotEmpty())
 
@@ -54,7 +57,7 @@ fun OutlineTextFieldSimple(
             .fillMaxWidth()
     ) {
 
-        Text(text = title.toUpperCase() , style = MaterialTheme.typography.subtitle2 , color = MaterialTheme.colors.secondary)
+        Text(text = title.toUpperCase() , style = MaterialTheme.typography.subtitle2 , color = MaterialTheme.colors.primary)
         OutlinedTextField(
             value = value,
             onValueChange = {
@@ -73,6 +76,7 @@ fun OutlineTextFieldSimple(
             textStyle = TextStyle(color = White),
             modifier = modifier
                 .fillMaxWidth(),
+            enabled = isEnable,
             label = { Text(text = label, style = MaterialTheme.typography.body1 ) },
             isError = if (errorMessage == "") false else errorMessage.isNotEmpty(),
             trailingIcon = {
@@ -101,8 +105,8 @@ fun OutlineTextFieldSimple(
             singleLine = true,
 
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                focusedBorderColor = MaterialTheme.colors.secondary,
-                unfocusedBorderColor =  MaterialTheme.colors.secondary),
+                focusedBorderColor = MaterialTheme.colors.primary,
+                unfocusedBorderColor =  MaterialTheme.colors.primary),
             shape = RoundedCornerShape(CARD_ITEM_ROUNDED)
         )
         Text(
@@ -129,7 +133,5 @@ fun OutlineTextFieldSimple(
 fun TextFieldCPreview() {
     FalloutTheme {
 
-        var ali = "ali"
-        OutlineTextFieldSimple(value = "ALi", onValueChange = {value-> ali = value} , errorForLength = "HI", title = "Full name")
     }
 }

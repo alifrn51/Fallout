@@ -72,14 +72,14 @@ fun BoxSendingListActivation(
                             modifier = Modifier
                                 .size(40.dp)
                                 .clip(shape = RoundedCornerShape(100.dp)),
-                            painter = person.image,
+                            painter = painterResource(id = R.drawable.sample),
                             contentDescription = "person",
                             contentScale = ContentScale.Crop
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         Text(
                             modifier = Modifier.width(40.dp),
-                            text = "${person.firstName} ${person.lastName}",
+                            text = person.fullName,
                             style = MaterialTheme.typography.overline,
                             fontSize = 12.sp,
                             textAlign = TextAlign.Center,
@@ -103,34 +103,5 @@ fun BoxSendingListActivation(
 @Composable
 fun BoxSendingListActivationPreview() {
 
-    /*FalloutTheme {
-        BoxSendingListActivation(
-            listPerson = listOf(
-                Person(
-                    firstName = "Ali",
-                    lastName = "Frn",
-                    phoneNumber = "09155524447",
-                    image = painterResource(
-                        id = R.drawable.sample
-                    )
-                ),
-                Person(
-                    firstName = "Ali",
-                    lastName = "Frnfdf",
-                    phoneNumber = "09155524447",
-                    image = painterResource(
-                        id = R.drawable.sample
-                    )
-                ),
-                Person(
-                    firstName = "Ali",
-                    lastName = "Frn",
-                    phoneNumber = "09155524447",
-                    image = painterResource(
-                        id = R.drawable.sample
-                    )
-                ),
-            )
-        )
-    }*/
+   
 }

@@ -1,10 +1,14 @@
 package com.fall.fallout.domain.model
 
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
+@Entity(tableName = "tbl_persons")
 data class Person(
-    val firstName: String,
-    val lastName: String,
+    val fullName: String,
+    @PrimaryKey
     val phoneNumber: String,
-    val image: Painter
+    val image: String,
 )
+
+class InvalidPersonException(message: String): Exception(message)

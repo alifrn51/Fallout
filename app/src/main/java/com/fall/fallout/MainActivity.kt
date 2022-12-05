@@ -9,9 +9,13 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import com.fall.fallout.presentation.screen.NavGraphs
 import com.fall.fallout.ui.theme.FalloutTheme
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.ramcosta.composedestinations.DestinationsNavHost
 import dagger.hilt.android.AndroidEntryPoint
 
+
+@ExperimentalPermissionsApi
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

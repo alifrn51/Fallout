@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.fall.fallout.domain.model.Person
 import com.fall.fallout.ui.theme.*
 
 @Composable
@@ -17,9 +18,11 @@ fun EditPersonDialog(
     modifier: Modifier = Modifier,
     title: String = "Edit Person",
     setShowDialog: (Boolean) -> Unit,
+    person: Person,
     onValueChangeFullName: (String) -> Unit,
     onValueChangePhoneNumber: (String) -> Unit,
-    description: String = "Write the full name and phone number of your person to report falling."
+    description: String = "Write the full name and phone number of your person to report falling.",
+    clickableEdit: () -> Unit
 ) {
 
     Dialog(onDismissRequest = { setShowDialog(false) }) {
@@ -44,18 +47,26 @@ fun EditPersonDialog(
 
                 OutlineTextFieldSimple(
                     title = "Full name",
-                    value = "",
+                    value = person.fullName,
                     onValueChange = onValueChangeFullName,
-                    errorForLength = "Error"
+                    errorForLength = "Error",
+                    isValid = {
+
+                    },
+                    isEnable = false
                 )
 
                 Spacer(modifier = Modifier.height(BETWEEN_PADDING))
 
                 OutlineTextFieldSimple(
                     title = "Phone number",
-                    value = "",
+                    value = person.phoneNumber,
                     onValueChange = onValueChangePhoneNumber,
-                    errorForLength = "Error"
+                    errorForLength = "Error",
+                    isValid = {
+
+                    },
+                    isEnable = false
                 )
 
                 Spacer(modifier = Modifier.height(EXTRA_LARGE_PADDING))
@@ -67,9 +78,11 @@ fun EditPersonDialog(
                         modifier = Modifier
                             .weight(1f)
                             .height(SIZE_HEIGHT_BUTTON),
-                        onClick = { /*TODO*/ },
+                        onClick = {
+
+                                  },
                         shape = RoundedCornerShape(CARD_ITEM_ROUNDED),
-                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary)
+                        colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary)
                     ) {
                         Text(text = "Confirm", color = Black)
                     }
@@ -92,7 +105,6 @@ fun EditPersonDialogPreview() {
 
     FalloutTheme {
 
-        var ali = ""
        // EditPersonDialog(onValueChange = { v -> ali = v })
     }
 }

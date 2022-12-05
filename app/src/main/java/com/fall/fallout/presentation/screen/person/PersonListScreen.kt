@@ -11,81 +11,49 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.window.Dialog
-import com.fall.fallout.R
-import com.fall.fallout.domain.model.Person
-import com.fall.fallout.presentation.component.EditPersonDialog
-import com.fall.fallout.presentation.component.ItemPerson
-import com.fall.fallout.presentation.component.ToolbarApplication
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.fall.fallout.presentation.component.*
 import com.fall.fallout.ui.theme.FalloutTheme
 import com.fall.fallout.ui.theme.Gray500
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-@Destination()
+@ExperimentalPermissionsApi
+@Destination
 @Composable
 fun PersonListScreen(
     navigator: DestinationsNavigator,
+    viewModel: PersonListViewModel = hiltViewModel()
 ) {
 
 
-    var fullNameValueChanged by remember {
+    val state = viewModel.state.value
+
+    val showDialogEdit = remember { mutableStateOf(false) }
+    val showDialogDelete = remember { mutableStateOf(false) }
+    val showDialogAdd = remember { mutableStateOf(false) }
+
+    var fullName by remember {
         mutableStateOf("")
     }
-    val phoneNumberValueChanged by remember {
+    var phoneNumber by remember {
         mutableStateOf("")
     }
 
-    var listPerson = listOf(
-        Person(
-            firstName = "Ali",
-            lastName = "Frn",
-            phoneNumber = "09155524447",
-            image = painterResource(
-                id = R.drawable.sample
-            )
-        ),
-        Person(
-            firstName = "Hasan",
-            lastName = "Shadi",
-            phoneNumber = "09154325684",
-            image = painterResource(
-                id = R.drawable.sample
-            )
-        ),
-        Person(
-            firstName = "Hamed",
-            lastName = "Ahangi",
-            phoneNumber = "09121514134",
-            image = painterResource(
-                id = R.drawable.sample
-            )
-        ),
-    )
 
-
-
-    val showDialog =  remember { mutableStateOf(false) }
-
-
-    if(showDialog.value)
-        EditPersonDialog(
-            setShowDialog = { showDialog.value = it},
-            onValueChangeFullName ={},
-            onValueChangePhoneNumber ={}
-        )
-
-    var scaffoldState = rememberScaffoldState()
+    val scaffoldState = rememberScaffoldState()
     Scaffold(
         scaffoldState = scaffoldState,
         floatingActionButton = {
-            FloatingActionButton(onClick = { /*TODO*/ }, backgroundColor = Gray500) {
+            FloatingActionButton(
+                onClick = { showDialogAdd.value = true }, backgroundColor = Gray500
+            ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "plusIcon",
-                    tint = MaterialTheme.colors.secondary
+                    tint = MaterialTheme.colors.primary
                 )
             }
         }
@@ -102,19 +70,20 @@ fun PersonListScreen(
 
 
             LazyColumn {
-                items(listPerson) { person ->
+                items(state.persons) { person ->
 
                     ItemPerson(
-                        fullName = "${person.firstName} ${person.lastName}",
+                        fullName = person.fullName,
                         phoneNumber = person.phoneNumber,
-                        image = person.image,
+                        image = null,
                         onClickDeleteItemPerson = {
-
-
-
+                            showDialogDelete.value = true
+                            viewModel.onEvent(PersonListEvent.CurrentPersonSelected(person))
                         },
                         onClickEditItemPerson = {
-                            showDialog.value = true
+                            showDialogEdit.value = true
+                            viewModel.onEvent(PersonListEvent.CurrentPersonSelected(person))
+
                         }
                     )
                 }
@@ -125,6 +94,58 @@ fun PersonListScreen(
     }
 
 
+    when {
+        showDialogAdd.value -> {
+
+            
+            NewPersonDialog(
+                valueTextFullName = fullName,
+                valueTextPhoneNumber = phoneNumber,
+                onValueChangeFullName = {fullName = it},
+                onValueChangePhoneNumber = {phoneNumber = it},
+                setShowDialog = { showDialogAdd.value = it },
+                clickableAdd = {
+                    viewModel.onEvent(PersonListEvent.AddPerson(fullName, phoneNumber))
+                    showDialogAdd.value = false
+                }
+            )
+            
+
+        }
+
+        showDialogEdit.value -> {
+
+            /*EditPersonDialog(
+                setShowDialog = { showDialogEdit.value = it },
+                onValueChangeFullName = { fullNameValueChanged = it },
+                onValueChangePhoneNumber = { phoneNumberValueChanged = it },
+                person = state.personSelected ?: return,
+                clickableEdit = {
+                    viewModel.onEvent(PersonListEvent.EditPerson)
+                    showDialogDelete.value = false
+
+                }
+            )*/
+
+
+        }
+
+        showDialogDelete.value -> {
+
+            DialogMessage(
+                title = "Delete Person",
+                message = "Are your sure to delete this person from list?",
+                clickableCancel = {
+                    showDialogDelete.value = false
+                },
+                clickableDelete = {
+                    viewModel.onEvent(PersonListEvent.DeletePerson)
+                    showDialogDelete.value = false
+                },
+                setShowDialog = {showDialogDelete.value = it}
+            )
+        }
+    }
 
 
 }

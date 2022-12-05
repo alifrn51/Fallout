@@ -42,7 +42,7 @@ fun ButtonBluer(
             horizontalArrangement = Arrangement.Center
         ) {
 
-            Icon(imageVector = icon, contentDescription = "Icon ${title.substring(0..2)}", tint = MaterialTheme.colors.secondary)
+            Icon(imageVector = icon, contentDescription = "Icon ${title.substring(0..2)}", tint = MaterialTheme.colors.primary)
 
             Spacer(modifier = Modifier.width(BETWEEN_PADDING))
 

@@ -37,7 +37,7 @@ fun CustomSwitch(
     cornerRadius:Dp = 100.dp,
     checkedTrackColor: Color = Color.White,
     uncheckedTrackColor: Color = Black,
-    checkedBackgroundSwitch: Color = MaterialTheme.colors.secondary,
+    checkedBackgroundSwitch: Color = MaterialTheme.colors.primary,
     uncheckedBackgroundSwitch: Color = White,
     gapBetweenThumbAndTrackEdge: Dp = 6.dp,
     switchON: MutableState<Boolean>

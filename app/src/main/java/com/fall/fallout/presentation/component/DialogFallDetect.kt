@@ -34,7 +34,7 @@ fun DialogFallDetect(
             Spacer(modifier = Modifier.height(MEDIUM_PADDING))
             Text(text = buildAnnotatedString {
                 append("If you are ok press ")
-                withStyle(style = SpanStyle(color = MaterialTheme.colors.secondary)){
+                withStyle(style = SpanStyle(color = MaterialTheme.colors.primary)){
                     append("I'm Ok")
                 }
                 append(" Button.")
@@ -48,9 +48,9 @@ fun DialogFallDetect(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Text(text = "00", style = MaterialTheme.typography.h3, color = MaterialTheme.colors.secondary)
-                Text(text = ":", style = MaterialTheme.typography.h3, color = MaterialTheme.colors.secondary)
-                Text(text = "10", style = MaterialTheme.typography.h3, color = MaterialTheme.colors.secondary)
+                Text(text = "00", style = MaterialTheme.typography.h3, color = MaterialTheme.colors.primary)
+                Text(text = ":", style = MaterialTheme.typography.h3, color = MaterialTheme.colors.primary)
+                Text(text = "10", style = MaterialTheme.typography.h3, color = MaterialTheme.colors.primary)
             }
 
             Spacer(modifier = Modifier.height(EXTRA_LARGE_PADDING))
@@ -59,7 +59,7 @@ fun DialogFallDetect(
                 Button(modifier = Modifier
                     .fillMaxWidth()
                     .height(SIZE_HEIGHT_BUTTON),
-                    shape = RoundedCornerShape(CARD_ITEM_ROUNDED), onClick = { clickableIamOk() }, colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary)) {
+                    shape = RoundedCornerShape(CARD_ITEM_ROUNDED), onClick = { clickableIamOk() }, colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary)) {
 
                     Text(text = "I'm Ok" , color = Black)
 

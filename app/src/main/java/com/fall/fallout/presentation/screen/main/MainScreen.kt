@@ -33,32 +33,7 @@ fun MainScreen(
     var switchON = remember {
         mutableStateOf(false)
     }
-    var listPerson = listOf(
-        Person(
-            firstName = "Ali",
-            lastName = "Frn",
-            phoneNumber = "09155524447",
-            image = painterResource(
-                id = R.drawable.sample
-            )
-        ),
-        Person(
-            firstName = "Ali",
-            lastName = "Frn",
-            phoneNumber = "09155524447",
-            image = painterResource(
-                id = R.drawable.sample
-            )
-        ),
-        Person(
-            firstName = "Ali",
-            lastName = "Frn",
-            phoneNumber = "09155524447",
-            image = painterResource(
-                id = R.drawable.sample
-            )
-        ),
-    )
+
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -97,7 +72,7 @@ fun MainScreen(
 
             Spacer(modifier = Modifier.height(BETWEEN_PADDING))
 
-            BoxSendingListActivation(listPerson = listPerson, switchON = switchON)
+            BoxSendingListActivation(listPerson = emptyList(), switchON = switchON)
         }
 
     }

@@ -47,7 +47,7 @@ fun ItemSetting(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-            Icon(imageVector = icon, contentDescription = "icon $title" , tint = MaterialTheme.colors.secondary)
+            Icon(imageVector = icon, contentDescription = "icon $title" , tint = MaterialTheme.colors.primary)
 
             Spacer(modifier = Modifier.width(BETWEEN_PADDING))
 

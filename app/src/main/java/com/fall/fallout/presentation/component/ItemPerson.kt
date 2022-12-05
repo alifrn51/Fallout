@@ -29,7 +29,7 @@ fun ItemPerson(
     modifier: Modifier = Modifier,
     fullName: String,
     phoneNumber: String,
-    image: Painter,
+    image: Painter?,
     onClickDeleteItemPerson: () -> Unit,
     onClickEditItemPerson: () -> Unit
 ) {
@@ -56,7 +56,7 @@ fun ItemPerson(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(100)),
-                painter = image,
+                painter = painterResource(id = R.drawable.sample),
                 contentScale = ContentScale.Crop,
                 contentDescription = "ImagePerson"
             )
@@ -84,7 +84,7 @@ fun ItemPerson(
                     Icon(
                         imageVector = Icons.Default.Edit,
                         contentDescription = "Edit",
-                        tint = MaterialTheme.colors.secondary,
+                        tint = MaterialTheme.colors.primary,
                         modifier = Modifier
                             .padding(2.dp)
                     )
@@ -98,7 +98,7 @@ fun ItemPerson(
                     Icon(
                         imageVector = Icons.Default.Delete,
                         contentDescription = "Delete",
-                        tint = MaterialTheme.colors.secondary,
+                        tint = MaterialTheme.colors.primary,
                         modifier = Modifier
                             .padding(2.dp)
                     )

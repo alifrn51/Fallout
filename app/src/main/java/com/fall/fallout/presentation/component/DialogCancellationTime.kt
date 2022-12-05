@@ -43,32 +43,32 @@ fun DialogCancellationTime(
                     modifier = Modifier
                         .border(
                             1.dp,
-                            color = MaterialTheme.colors.secondary,
+                            color = MaterialTheme.colors.primary,
                             shape = RoundedCornerShape(CARD_ITEM_ROUNDED)
                         )
                         .padding(horizontal = 8.dp)
                         .clickable { },
                     text = "00",
                     style = MaterialTheme.typography.h3,
-                    color = MaterialTheme.colors.secondary
+                    color = MaterialTheme.colors.primary
                 )
                 Text(
                     text = " : ",
                     style = MaterialTheme.typography.h3,
-                    color = MaterialTheme.colors.secondary
+                    color = MaterialTheme.colors.primary
                 )
                 Text(
                     modifier = Modifier
                         .border(
                             1.dp,
-                            color = MaterialTheme.colors.secondary,
+                            color = MaterialTheme.colors.primary,
                             shape = RoundedCornerShape(CARD_ITEM_ROUNDED)
                         )
                         .padding(horizontal = 8.dp)
                         .clickable { },
                     text = "59",
                     style = MaterialTheme.typography.h3,
-                    color = MaterialTheme.colors.secondary
+                    color = MaterialTheme.colors.primary
                 )
             }
 
@@ -80,7 +80,7 @@ fun DialogCancellationTime(
                     .height(SIZE_HEIGHT_BUTTON),
                     shape = RoundedCornerShape(CARD_ITEM_ROUNDED),
                     onClick = { clickableSave() },
-                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary)
+                    colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary)
                 ) {
 
                     Text(text = "Save", color = Black)
