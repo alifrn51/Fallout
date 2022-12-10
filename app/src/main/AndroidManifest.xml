@@ -5,6 +5,11 @@
 
 
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -28,7 +33,17 @@
             </intent-filter>
         </activity>
 
-<!--        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyAgJXgMJngKAcLO691xgMOi_U2ES8Jw-9c"/>-->
+        <provider
+            android:name=".utils.ComposeFileProvider"
+            android:authorities="com.fall.fallout.fileprovider"
+            android:grantUriPermissions="true"
+            android:exported="false">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyAgJXgMJngKAcLO691xgMOi_U2ES8Jw-9c"/>
     </application>
 
 </manifest>

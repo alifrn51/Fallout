@@ -1,9 +1,9 @@
 package com.fall.fallout.presentation.component
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -12,28 +12,23 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.fall.fallout.ui.theme.CARD_ITEM_ROUNDED
 import com.fall.fallout.ui.theme.FalloutTheme
 import com.fall.fallout.ui.theme.White
-import com.fall.fallout.ui.theme.Yellow700
 
 @Composable
 fun OutlineTextFieldSimple(
-    title:String,
+    title: String,
     value: String,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     label: String = "",
-    errorForLength : String,
-    minLength:Int = 2,
+    errorForLength: String,
+    minLength: Int,
     isEnable: Boolean = false,
     isIconClearFiled: Boolean = false,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
@@ -45,11 +40,16 @@ fun OutlineTextFieldSimple(
         mutableStateOf("")
     }
 
+    errorMessage =
+        if (value == "") ""
+        else if (value.length < minLength)
+            errorForLength
+        else {
+            ""
+        }
+
 
     isValid(errorMessage.isEmpty() && value.isNotEmpty())
-
-
-
 
 
     Column(
@@ -57,7 +57,11 @@ fun OutlineTextFieldSimple(
             .fillMaxWidth()
     ) {
 
-        Text(text = title.toUpperCase() , style = MaterialTheme.typography.subtitle2 , color = MaterialTheme.colors.primary)
+        Text(
+            text = title.uppercase(),
+            style = MaterialTheme.typography.subtitle2,
+            color = MaterialTheme.colors.primary
+        )
         OutlinedTextField(
             value = value,
             onValueChange = {
@@ -65,8 +69,8 @@ fun OutlineTextFieldSimple(
 
                 errorMessage =
                     if (it == "") ""
-                    else if (value.length<minLength)
-                        "$errorForLength $minLength"
+                    else if (it.length < minLength)
+                        errorForLength
                     else {
                         ""
                     }
@@ -77,8 +81,8 @@ fun OutlineTextFieldSimple(
             modifier = modifier
                 .fillMaxWidth(),
             enabled = isEnable,
-            label = { Text(text = label, style = MaterialTheme.typography.body1 ) },
-            isError = if (errorMessage == "") false else errorMessage.isNotEmpty(),
+            label = { Text(text = label, style = MaterialTheme.typography.body1) },
+            isError = errorMessage.isNotEmpty(),
             trailingIcon = {
                 if (isIconClearFiled) {
 
@@ -106,7 +110,8 @@ fun OutlineTextFieldSimple(
 
             colors = TextFieldDefaults.outlinedTextFieldColors(
                 focusedBorderColor = MaterialTheme.colors.primary,
-                unfocusedBorderColor =  MaterialTheme.colors.primary),
+                unfocusedBorderColor = MaterialTheme.colors.surface
+            ),
             shape = RoundedCornerShape(CARD_ITEM_ROUNDED)
         )
         Text(
@@ -115,6 +120,7 @@ fun OutlineTextFieldSimple(
             style = MaterialTheme.typography.caption,
             modifier = Modifier
                 .fillMaxWidth()
+                .height(24.dp)
                 .padding(start = 8.dp)
             //.offset(y = (-0).dp)
         )

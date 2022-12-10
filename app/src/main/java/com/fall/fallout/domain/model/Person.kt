@@ -8,7 +8,7 @@ data class Person(
     val fullName: String,
     @PrimaryKey
     val phoneNumber: String,
-    val image: String,
+    val image: String?,
 )
 
 class InvalidPersonException(message: String): Exception(message)

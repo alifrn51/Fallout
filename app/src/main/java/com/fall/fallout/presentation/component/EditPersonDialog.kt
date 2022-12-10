@@ -53,7 +53,8 @@ fun EditPersonDialog(
                     isValid = {
 
                     },
-                    isEnable = false
+                    isEnable = false,
+                    minLength = 3
                 )
 
                 Spacer(modifier = Modifier.height(BETWEEN_PADDING))
@@ -66,7 +67,8 @@ fun EditPersonDialog(
                     isValid = {
 
                     },
-                    isEnable = false
+                    isEnable = false,
+                    minLength = 11
                 )
 
                 Spacer(modifier = Modifier.height(EXTRA_LARGE_PADDING))

@@ -125,7 +125,8 @@ fun NewPersonDialog(
                     isValid = {
                         isValidFullName = it
                     },
-                    isEnable = false
+                    isEnable = false,
+                    minLength = 3
                 )
 
                 Spacer(modifier = Modifier.height(BETWEEN_PADDING))
@@ -138,7 +139,8 @@ fun NewPersonDialog(
                     isValid = {
                         isValidPhoneNumber = it
                     },
-                    isEnable = false
+                    isEnable = false,
+                    minLength = 11
                 )
 
                 Spacer(modifier = Modifier.height(LARGE_PADDING))
@@ -214,38 +216,38 @@ fun NewPersonDialog(
     }
 
 
-    result.value?.data?.let { uri ->
+        result.value?.data?.let { uri ->
 
 
-        // on below line we are creating a cursor
-        val cursor: Cursor? =
-            LocalContext.current.contentResolver.query(uri, null, null, null, null)
+            // on below line we are creating a cursor
+            val cursor: Cursor? =
+                LocalContext.current.contentResolver.query(uri, null, null, null, null)
 
-        cursor?.let {
+            cursor?.let {
 
-            // on below line we are moving cursor.
-            cursor.moveToFirst()
+                // on below line we are moving cursor.
+                cursor.moveToFirst()
 
-            // on below line we are getting our
-            // number and name from cursor
-            val number: String =
-                cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
-            val name: String =
-                cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+                // on below line we are getting our
+                // number and name from cursor
+                val number: String =
+                    cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                val name: String =
+                    cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
 
-            // on the below line we are setting values.
-            onValueChangeFullName(name)
-            onValueChangePhoneNumber(number)
+                // on the below line we are setting values.
+                onValueChangeFullName(name)
+                onValueChangePhoneNumber(number)
 
 
+            }
         }
-    }
 
 
 }
 
 
-@OptIn(ExperimentalPermissionsApi::class)
+@ExperimentalPermissionsApi
 @Preview
 @Composable
 fun NewPersonDialogPreview() {

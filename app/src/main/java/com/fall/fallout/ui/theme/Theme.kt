@@ -9,11 +9,11 @@ private val DarkColorPalette = darkColors(
     secondary = Black,
     // Other default colors to override
     background = Black,
+    onBackground = White,
     surface = Gray500,
+    onSurface = White,
     onPrimary = White,
     onSecondary = White,
-    onBackground = White,
-    onSurface = White,
     error = Red500,
     onError = White
 )

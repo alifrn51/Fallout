@@ -10,30 +10,35 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.fall.fallout.presentation.component.*
+import com.fall.fallout.presentation.component.DialogMessage
+import com.fall.fallout.presentation.component.ItemPerson
+import com.fall.fallout.presentation.component.ToolbarApplication
+import com.fall.fallout.presentation.screen.destinations.AddPersonScreenDestination
 import com.fall.fallout.ui.theme.FalloutTheme
 import com.fall.fallout.ui.theme.Gray500
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.launch
 
+@ExperimentalMaterialApi
+@ExperimentalComposeUiApi
 @ExperimentalPermissionsApi
 @Destination
 @Composable
 fun PersonListScreen(
     navigator: DestinationsNavigator,
-    viewModel: PersonListViewModel = hiltViewModel()
+    viewModel: PersonViewModel = hiltViewModel()
 ) {
 
 
     val state = viewModel.state.value
 
-    val showDialogEdit = remember { mutableStateOf(false) }
     val showDialogDelete = remember { mutableStateOf(false) }
-    val showDialogAdd = remember { mutableStateOf(false) }
 
     var fullName by remember {
         mutableStateOf("")
@@ -44,16 +49,32 @@ fun PersonListScreen(
 
 
     val scaffoldState = rememberScaffoldState()
+    val scope = rememberCoroutineScope()
+
     Scaffold(
         scaffoldState = scaffoldState,
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { showDialogAdd.value = true }, backgroundColor = Gray500
+                onClick = {
+                    navigator.navigate(AddPersonScreenDestination)
+                }, backgroundColor = Gray500
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "plusIcon",
                     tint = MaterialTheme.colors.primary
+                )
+            }
+        },
+        snackbarHost = {
+            // reuse default SnackbarHost to have default animation and timing handling
+            SnackbarHost(it) { data ->
+                // custom snackbar with the custom colors
+                Snackbar(
+                    actionColor = MaterialTheme.colors.primary,
+                    backgroundColor = MaterialTheme.colors.surface,
+                    contentColor = MaterialTheme.colors.onSurface,
+                    snackbarData = data
                 )
             }
         }
@@ -75,14 +96,12 @@ fun PersonListScreen(
                     ItemPerson(
                         fullName = person.fullName,
                         phoneNumber = person.phoneNumber,
-                        image = null,
+                        image = person.image,
                         onClickDeleteItemPerson = {
                             showDialogDelete.value = true
                             viewModel.onEvent(PersonListEvent.CurrentPersonSelected(person))
                         },
                         onClickEditItemPerson = {
-                            showDialogEdit.value = true
-                            viewModel.onEvent(PersonListEvent.CurrentPersonSelected(person))
 
                         }
                     )
@@ -91,61 +110,40 @@ fun PersonListScreen(
             }
         }
 
+
+        when {
+
+            showDialogDelete.value -> {
+
+                DialogMessage(
+                    title = "Delete Person",
+                    message = "Are your sure to delete this person from list?",
+                    clickableCancel = {
+                        showDialogDelete.value = false
+                    },
+                    clickableDelete = {
+                        viewModel.onEvent(PersonListEvent.DeletePerson)
+                        showDialogDelete.value = false
+                        scope.launch {
+                            val result = scaffoldState.snackbarHostState.showSnackbar(
+                                message = "Contact deleted!",
+                                actionLabel = "Restore"
+                            )
+
+                            if (result == SnackbarResult.ActionPerformed) {
+                                viewModel.onEvent(PersonListEvent.RestorePerson)
+                            }
+                        }
+                    },
+                    setShowDialog = { showDialogDelete.value = it }
+                )
+            }
+        }
+
+
     }
 
 
-    when {
-        showDialogAdd.value -> {
-
-            
-            NewPersonDialog(
-                valueTextFullName = fullName,
-                valueTextPhoneNumber = phoneNumber,
-                onValueChangeFullName = {fullName = it},
-                onValueChangePhoneNumber = {phoneNumber = it},
-                setShowDialog = { showDialogAdd.value = it },
-                clickableAdd = {
-                    viewModel.onEvent(PersonListEvent.AddPerson(fullName, phoneNumber))
-                    showDialogAdd.value = false
-                }
-            )
-            
-
-        }
-
-        showDialogEdit.value -> {
-
-            /*EditPersonDialog(
-                setShowDialog = { showDialogEdit.value = it },
-                onValueChangeFullName = { fullNameValueChanged = it },
-                onValueChangePhoneNumber = { phoneNumberValueChanged = it },
-                person = state.personSelected ?: return,
-                clickableEdit = {
-                    viewModel.onEvent(PersonListEvent.EditPerson)
-                    showDialogDelete.value = false
-
-                }
-            )*/
-
-
-        }
-
-        showDialogDelete.value -> {
-
-            DialogMessage(
-                title = "Delete Person",
-                message = "Are your sure to delete this person from list?",
-                clickableCancel = {
-                    showDialogDelete.value = false
-                },
-                clickableDelete = {
-                    viewModel.onEvent(PersonListEvent.DeletePerson)
-                    showDialogDelete.value = false
-                },
-                setShowDialog = {showDialogDelete.value = it}
-            )
-        }
-    }
 
 
 }

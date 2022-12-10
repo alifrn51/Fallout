@@ -10,14 +10,13 @@ import com.fall.fallout.domain.use_cases.GetPersonsUseCase
 import com.fall.fallout.domain.use_cases.PersonUseCases
 import com.fall.fallout.utils.UiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class PersonListViewModel @Inject constructor(
+class PersonViewModel @Inject constructor(
     private val personsUseCase: PersonUseCases
 ) :ViewModel() {
 
@@ -30,10 +29,10 @@ class PersonListViewModel @Inject constructor(
 
     private var recentlyDeletedPerson: Person? = null
 
+    private var getPersonJob: Job? = null
+
     init {
-        viewModelScope.launch {
-            _state.value = state.value.copy(persons = personsUseCase.getPersonsUseCase().stateIn(viewModelScope).value)
-        }
+        getPerson()
     }
 
 
@@ -55,8 +54,6 @@ class PersonListViewModel @Inject constructor(
 
                 viewModelScope.launch {
                     personsUseCase.deletePersonUseCase(person = state.value.personSelected?:return@launch)
-                    _state.value = state.value.copy(persons = personsUseCase.getPersonsUseCase().stateIn(viewModelScope).value)
-
                     recentlyDeletedPerson = state.value.personSelected
                 }
             }
@@ -78,7 +75,7 @@ class PersonListViewModel @Inject constructor(
                             person = Person(
                                 fullName = event.fullName,
                                 phoneNumber = event.phoneNumber,
-                                image = ""
+                                image = event.image
                             )
                         )
 
@@ -94,5 +91,14 @@ class PersonListViewModel @Inject constructor(
 
             }
         }
+    }
+
+    private fun getPerson(){
+        getPersonJob?.cancel();
+        getPersonJob = personsUseCase.getPersonsUseCase()
+            .onEach { persons ->
+                _state.value = state.value.copy(persons = persons)
+            }
+            .launchIn(viewModelScope)
     }
 }
