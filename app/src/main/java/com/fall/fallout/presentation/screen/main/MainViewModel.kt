@@ -1,14 +1,13 @@
 package com.fall.fallout.presentation.screen.main
 
+import android.content.Context
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fall.fallout.domain.use_cases.PersonUseCases
-import com.fall.fallout.presentation.screen.person.PersonListState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -23,6 +22,8 @@ class MainViewModel @Inject constructor(
     private val _state = mutableStateOf(MainState())
     val state: State<MainState> = _state
 
+    var currentLocation: Boolean = false
+
     private var getPersonJob: Job? = null
 
 
@@ -32,6 +33,12 @@ class MainViewModel @Inject constructor(
 
     fun onEvent(event: MainEvent){
         when(event){
+
+            is MainEvent.UpdateLocation -> {
+                _state.value = state.value.copy(
+                    latLong = event.latLong
+                )
+            }
 
         }
     }
@@ -43,6 +50,10 @@ class MainViewModel @Inject constructor(
                 _state.value = state.value.copy(persons = persons)
             }
             .launchIn(viewModelScope)
+    }
+
+        fun toggleCurrentLocation ():Boolean{
+        return !currentLocation
     }
 
 }

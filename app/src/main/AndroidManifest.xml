@@ -9,6 +9,8 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:allowBackup="true"
@@ -21,6 +23,8 @@
         android:theme="@style/Theme.Fallout"
         tools:targetApi="31"
         android:name=".FalloutApplication">
+
+        <service android:name=".utils.serviceLocation.LocationService"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -33,17 +37,7 @@
             </intent-filter>
         </activity>
 
-        <provider
-            android:name=".utils.ComposeFileProvider"
-            android:authorities="com.fall.fallout.fileprovider"
-            android:grantUriPermissions="true"
-            android:exported="false">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/filepaths" />
-        </provider>
-
-        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyAgJXgMJngKAcLO691xgMOi_U2ES8Jw-9c"/>
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyDpBgSVX5Knj9yYbigtu1tsStWQIAQN2vc"/>
     </application>
 
 </manifest>

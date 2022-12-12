@@ -1,9 +1,14 @@
 package com.fall.fallout.presentation.screen.main
 
+import android.Manifest
+import android.app.Activity.RESULT_OK
 import android.content.Context
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.location.LocationManager
 import android.os.Build
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -16,18 +21,19 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.MyLocation
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.fall.fallout.domain.model.LocationDetails
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.lifecycleScope
 import com.fall.fallout.presentation.component.BoxSendingListActivation
 import com.fall.fallout.presentation.component.ButtonBluer
 import com.fall.fallout.presentation.screen.destinations.PersonListScreenDestination
@@ -35,8 +41,11 @@ import com.fall.fallout.presentation.screen.destinations.SettingsScreenDestinati
 import com.fall.fallout.ui.theme.BETWEEN_PADDING
 import com.fall.fallout.ui.theme.FalloutTheme
 import com.fall.fallout.ui.theme.SMALL_PADDING
-import com.fall.fallout.utils.LocationLiveData
+import com.fall.fallout.utils.isPermanentlyDenied
+import com.fall.fallout.utils.serviceLocation.DefaultLocationClient
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -45,6 +54,10 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.S)
 @ExperimentalMaterialApi
@@ -60,21 +73,142 @@ fun MainScreen(
 
 
     val state = viewModel.state.value
+
     val switchON = remember {
         mutableStateOf(false)
     }
 
     val uiSettings = remember {
-        MapUiSettings(zoomControlsEnabled = false)
+        MapUiSettings(zoomControlsEnabled = false, myLocationButtonEnabled = false)
     }
 
+    var permissionFindLocationGranted by remember {
+        mutableStateOf(false)
+    }
+
+    var permissionCoarseLocationGranted by remember {
+        mutableStateOf(false)
+    }
+
+    val gpsState = remember {
+        mutableStateOf(false)
+    }
 
     val context: Context = LocalContext.current
 
-    val locationLiveData = LocationLiveData(context)
+    val coroutineScope = rememberCoroutineScope()
 
 
-    val locationDetails = locationLiveData.value
+    val cameraPositionState = rememberCameraPositionState()
+
+    val locationClient = DefaultLocationClient(
+        context = context,
+        LocationServices.getFusedLocationProviderClient(context),
+        interval = 3000L
+    )
+
+    val settingResultRequest = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartIntentSenderForResult()
+    ) { activityResult ->
+        gpsState.value = activityResult.resultCode == RESULT_OK
+    }
+
+
+    val permissionState = rememberMultiplePermissionsState(
+        permissions = listOf(
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+    )
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(
+        key1 = lifecycleOwner,
+        effect = {
+            val observer = LifecycleEventObserver { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    permissionState.launchMultiplePermissionRequest()
+
+                    if (permissionFindLocationGranted &&
+                            permissionCoarseLocationGranted) {
+                            locationClient.turnOnGPS { intentSenderRequest ->
+
+                                settingResultRequest.launch(intentSenderRequest)
+
+                            }.onEach { enable ->
+                                gpsState.value = enable
+                            }.launchIn(coroutineScope)
+
+                    }
+
+                }
+            }
+            lifecycleOwner.lifecycle.addObserver(observer)
+
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(observer)
+            }
+        }
+    )
+
+
+
+
+    permissionState.permissions.forEach { prem ->
+
+
+        when (prem.permission) {
+
+            Manifest.permission.ACCESS_COARSE_LOCATION -> {
+
+                when {
+                    prem.hasPermission -> {
+
+                        permissionCoarseLocationGranted = prem.hasPermission
+
+
+                    }
+
+                    prem.shouldShowRationale -> {
+
+
+                    }
+
+                    prem.isPermanentlyDenied() -> {
+
+                    }
+                }
+
+            }
+
+            Manifest.permission.ACCESS_FINE_LOCATION -> {
+
+
+                when {
+                    prem.hasPermission -> {
+
+                        permissionFindLocationGranted = prem.hasPermission
+
+
+                    }
+
+                    prem.shouldShowRationale -> {
+
+
+                    }
+
+                    prem.isPermanentlyDenied() -> {
+
+                    }
+                }
+
+
+            }
+        }
+
+
+    }
 
 
 
@@ -82,19 +216,57 @@ fun MainScreen(
         modifier = Modifier.fillMaxSize()
     ) {
 
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            properties = state.mapProperties,
-            uiSettings = uiSettings,
-            cameraPositionState = rememberCameraPositionState {
-                locationDetails?.let {
 
-                      position = CameraPosition.fromLatLngZoom(LatLng(it.lattitude.toDouble(), it.longitude.toDouble()), 10f)
+        if (permissionCoarseLocationGranted &&
+            permissionFindLocationGranted
+        ) {
 
+
+            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+
+            if (gpsState.value || isGpsEnabled) {
+
+                rememberCoroutineScope {
+
+                    locationClient.getLocationUpdates()
+                        .catch { e -> e.printStackTrace() }
+                        .onEach { location ->
+
+                            viewModel.onEvent(
+                                MainEvent.UpdateLocation(
+                                    LatLng(location.latitude, location.longitude)
+                                )
+                            )
+
+                        }.launchIn(lifecycleOwner.lifecycleScope)
                 }
 
             }
-        )
+
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                properties = state.mapProperties,
+                uiSettings = uiSettings,
+                cameraPositionState = cameraPositionState,
+            )
+
+        }
+
+
+
+
+
+
+
+        state.latLong?.let {
+            cameraPositionState.position = CameraPosition.fromLatLngZoom(
+                LatLng(
+                    it.latitude,
+                    it.longitude
+                ), 16f
+            )
+        }
 
 
         Column(
@@ -110,7 +282,36 @@ fun MainScreen(
                 IconButton(onClick = {
 
 
-                    locationLiveData.startLocationUpdates()
+                    /*Intent(context, LocationService::class.java).apply {
+                        action = LocationService.ACTION_START
+                        context.startService(this)
+                    }*/
+
+                    if (!gpsState.value){
+                        coroutineScope.launch {
+
+
+                            locationClient.turnOnGPS { intentSenderRequest ->
+
+                                settingResultRequest.launch(intentSenderRequest)
+
+                            }.onEach { enable ->
+                                gpsState.value = enable
+                            }.launchIn(this)
+
+                        }
+                    }else {
+                        state.latLong?.let {
+                            cameraPositionState.position = CameraPosition.fromLatLngZoom(
+                                LatLng(
+                                    it.latitude,
+                                    it.longitude
+                                ), 16f
+                            )
+                        }
+                    }
+
+
 
                 }) {
                     Box(
@@ -127,7 +328,7 @@ fun MainScreen(
                         )
                     }
                 }
-                
+
                 Spacer(modifier = Modifier.height(BETWEEN_PADDING))
             }
 
@@ -164,6 +365,7 @@ fun MainScreen(
 
 
 }
+
 
 @Preview(showBackground = true, showSystemUi = true, uiMode = UI_MODE_NIGHT_YES)
 @Composable

@@ -10,4 +10,7 @@ sealed class PersonListEvent{
     data class AddPerson(val fullName: String,val phoneNumber: String,val image: String?): PersonListEvent()
     object RestorePerson: PersonListEvent()
 
+
+
+
 }
