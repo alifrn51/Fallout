@@ -6,6 +6,5 @@ sealed class MainEvent{
 
     data class UpdateLocation(var latLong: LatLng): MainEvent()
 
-    data class CurrentLocation(var latLong: LatLng) : MainEvent()
-
+    data class SensorActivation(var isEnable: Boolean): MainEvent()
 }

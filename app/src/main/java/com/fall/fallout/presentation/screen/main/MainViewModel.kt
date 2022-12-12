@@ -39,6 +39,11 @@ class MainViewModel @Inject constructor(
                     latLong = event.latLong
                 )
             }
+            is MainEvent.SensorActivation -> {
+                _state.value = state.value.copy(
+                    switchSensor = event.isEnable
+                )
+            }
 
         }
     }

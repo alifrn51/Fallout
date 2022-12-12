@@ -11,7 +11,9 @@ data class MainState(
         mapStyleOptions = MapStyleOptions(MapStyle.json),
         isMyLocationEnabled = true,
     ),
-    val persons:List<Person> = emptyList(),
-    val latLong: LatLng? = null
+    val persons: List<Person> = emptyList(),
+    val latLong: LatLng? = null,
+    val switchSensor: Boolean = false,
+    val switchContact: Boolean = false
 
 )

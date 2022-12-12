@@ -3,10 +3,10 @@ package com.fall.fallout.presentation.screen.main
 import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.location.LocationManager
 import android.os.Build
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -35,6 +35,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
 import com.fall.fallout.presentation.component.BoxSendingListActivation
+import com.fall.fallout.presentation.component.BoxSensorActivation
 import com.fall.fallout.presentation.component.ButtonBluer
 import com.fall.fallout.presentation.screen.destinations.PersonListScreenDestination
 import com.fall.fallout.presentation.screen.destinations.SettingsScreenDestination
@@ -43,6 +44,7 @@ import com.fall.fallout.ui.theme.FalloutTheme
 import com.fall.fallout.ui.theme.SMALL_PADDING
 import com.fall.fallout.utils.isPermanentlyDenied
 import com.fall.fallout.utils.serviceLocation.DefaultLocationClient
+import com.fall.fallout.utils.serviceLocation.LocationService
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.location.LocationServices
@@ -74,9 +76,6 @@ fun MainScreen(
 
     val state = viewModel.state.value
 
-    val switchON = remember {
-        mutableStateOf(false)
-    }
 
     val uiSettings = remember {
         MapUiSettings(zoomControlsEnabled = false, myLocationButtonEnabled = false)
@@ -131,14 +130,15 @@ fun MainScreen(
                     permissionState.launchMultiplePermissionRequest()
 
                     if (permissionFindLocationGranted &&
-                            permissionCoarseLocationGranted) {
-                            locationClient.turnOnGPS { intentSenderRequest ->
+                        permissionCoarseLocationGranted
+                    ) {
+                        locationClient.turnOnGPS { intentSenderRequest ->
 
-                                settingResultRequest.launch(intentSenderRequest)
+                            settingResultRequest.launch(intentSenderRequest)
 
-                            }.onEach { enable ->
-                                gpsState.value = enable
-                            }.launchIn(coroutineScope)
+                        }.onEach { enable ->
+                            gpsState.value = enable
+                        }.launchIn(coroutineScope)
 
                     }
 
@@ -222,7 +222,8 @@ fun MainScreen(
         ) {
 
 
-            val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val locationManager =
+                context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
 
             if (gpsState.value || isGpsEnabled) {
@@ -256,17 +257,20 @@ fun MainScreen(
 
 
 
+        BoxSensorActivation(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = SMALL_PADDING, end = SMALL_PADDING, top = 30.dp, bottom = 0.dp)
+                .align(Alignment.TopCenter),
+            switchOnChange = {
+                viewModel.onEvent(MainEvent.SensorActivation(it))
+            }
+        )
 
 
 
-        state.latLong?.let {
-            cameraPositionState.position = CameraPosition.fromLatLngZoom(
-                LatLng(
-                    it.latitude,
-                    it.longitude
-                ), 16f
-            )
-        }
+
+
 
 
         Column(
@@ -282,12 +286,7 @@ fun MainScreen(
                 IconButton(onClick = {
 
 
-                    /*Intent(context, LocationService::class.java).apply {
-                        action = LocationService.ACTION_START
-                        context.startService(this)
-                    }*/
-
-                    if (!gpsState.value){
+                    if (!gpsState.value) {
                         coroutineScope.launch {
 
 
@@ -300,7 +299,7 @@ fun MainScreen(
                             }.launchIn(this)
 
                         }
-                    }else {
+                    } else {
                         state.latLong?.let {
                             cameraPositionState.position = CameraPosition.fromLatLngZoom(
                                 LatLng(
@@ -310,7 +309,6 @@ fun MainScreen(
                             )
                         }
                     }
-
 
 
                 }) {
@@ -358,9 +356,29 @@ fun MainScreen(
 
             Spacer(modifier = Modifier.height(BETWEEN_PADDING))
 
-            BoxSendingListActivation(listPerson = state.persons, switchON = switchON)
+            BoxSendingListActivation(listPerson = state.persons){
+
+            }
         }
 
+    }
+
+
+
+    state.latLong?.let {
+        cameraPositionState.position = CameraPosition.fromLatLngZoom(
+            LatLng(
+                it.latitude,
+                it.longitude
+            ), 16f
+        )
+    }
+
+    state.switchSensor.let {
+        Intent(context, LocationService::class.java).apply {
+            action = if (it) LocationService.ACTION_START else LocationService.ACTION_STOP
+            context.startService(this)
+        }
     }
 
 

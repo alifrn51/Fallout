@@ -1,25 +1,27 @@
 package com.fall.fallout.presentation.screen.person
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.fall.fallout.R
 import com.fall.fallout.presentation.component.DialogMessage
 import com.fall.fallout.presentation.component.ItemPerson
 import com.fall.fallout.presentation.component.ToolbarApplication
 import com.fall.fallout.presentation.screen.destinations.AddPersonScreenDestination
-import com.fall.fallout.ui.theme.FalloutTheme
-import com.fall.fallout.ui.theme.Gray500
+import com.fall.fallout.ui.theme.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -90,22 +92,48 @@ fun PersonListScreen(
             }
 
 
-            LazyColumn {
-                items(state.persons) { person ->
+            if (state.persons.isNotEmpty()){
+                LazyColumn {
+                    items(state.persons) { person ->
 
-                    ItemPerson(
-                        fullName = person.fullName,
-                        phoneNumber = person.phoneNumber,
-                        image = person.image,
-                        onClickDeleteItemPerson = {
-                            showDialogDelete.value = true
-                            viewModel.onEvent(PersonListEvent.CurrentPersonSelected(person))
-                        },
-                        onClickEditItemPerson = {
+                        ItemPerson(
+                            fullName = person.fullName,
+                            phoneNumber = person.phoneNumber,
+                            image = person.image,
+                            onClickDeleteItemPerson = {
+                                showDialogDelete.value = true
+                                viewModel.onEvent(PersonListEvent.CurrentPersonSelected(person))
+                            },
+                            onClickEditItemPerson = {
 
-                        }
-                    )
+                            }
+                        )
+                    }
+
                 }
+
+            }else{
+
+                    Column(modifier = Modifier
+                        .fillMaxSize().offset(y = (-16).dp),verticalArrangement = Arrangement.Center , horizontalAlignment = Alignment.CenterHorizontally) {
+
+                        Text(
+                            modifier = Modifier.padding(bottom = BETWEEN_PADDING),
+                            text = "Empty List",
+                            style = MaterialTheme.typography.h6,
+                            color = MaterialTheme.colors.onSurface
+                        )
+                        Text(
+                            modifier = Modifier.padding(bottom = MEDIUM_PADDING),
+                            text = "Add contact to notify.",
+                            style = MaterialTheme.typography.subtitle1,
+                            color = MaterialTheme.colors.onSurface
+                        )
+
+                        Image(modifier = Modifier.size(130.dp),painter = painterResource(id = R.drawable.img_box)  , contentDescription ="EmptyBox" )
+
+                    }
+
 
             }
         }

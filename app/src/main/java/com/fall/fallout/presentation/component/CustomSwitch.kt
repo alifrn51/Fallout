@@ -40,7 +40,8 @@ fun CustomSwitch(
     checkedBackgroundSwitch: Color = MaterialTheme.colors.primary,
     uncheckedBackgroundSwitch: Color = White,
     gapBetweenThumbAndTrackEdge: Dp = 6.dp,
-    switchON: MutableState<Boolean>
+    switchON: MutableState<Boolean>,
+    switchOnChange: (Boolean) -> Unit
 ) {
 
 
@@ -63,6 +64,7 @@ fun CustomSwitch(
                     onTap = {
                         // This is called when the user taps on the canvas
                         switchON.value = !switchON.value
+                        switchOnChange(switchON.value)
                     }
                 )
             }
