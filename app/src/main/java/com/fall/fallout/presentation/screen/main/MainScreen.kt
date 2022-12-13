@@ -146,9 +146,8 @@ fun MainScreen(
             val observer = LifecycleEventObserver { _, event ->
                 if (event == Lifecycle.Event.ON_RESUME) {
 
-                    if(FallDetectionService.fallDetection != null){
-                        switchSensor.value = true
-                    }
+                    switchSensor.value = FallDetectionService.fallDetection != null
+
                     permissionState.launchMultiplePermissionRequest()
 
                     if (permissionFindLocationGranted &&
@@ -207,29 +206,20 @@ fun MainScreen(
             Manifest.permission.ACCESS_FINE_LOCATION -> {
 
 
-                when {
-                    prem.hasPermission -> {
+                if (prem.hasPermission) {
 
-                        permissionFindLocationGranted = prem.hasPermission
-
-
-                    }
-
-                    prem.shouldShowRationale -> {
+                    permissionFindLocationGranted = prem.hasPermission
 
 
-                    }
-
-                    prem.isPermanentlyDenied() -> {
-                        if (!showDialogPermissionLocation.value) {
-                            Log.i("TAG", "MainScreen: locationdenisdlfas")
-                            showDialogPermissionLocation.value = true
-                        }
+                } else if (prem.isPermanentlyDenied()) {
+                    if (!showDialogPermissionLocation.value) {
+                        Log.i("TAG", "MainScreen: locationdenisdlfas")
+                        showDialogPermissionLocation.value = true
                     }
                 }
-
-
             }
+
+
         }
 
 
@@ -398,23 +388,23 @@ fun MainScreen(
                 switchOnChange = { it ->
                     permissionStateSMS.launchPermissionRequest()
 
-                        if(permissionStateSMS.hasPermission) {
+                    if (permissionStateSMS.hasPermission) {
 
-                            switchContact.value = it
-                            viewModel.onEvent(MainEvent.ContactActivation(it))
-                            showDialogPermissionSMS.value = false
+                        switchContact.value = it
+                        viewModel.onEvent(MainEvent.ContactActivation(it))
+                        showDialogPermissionSMS.value = false
 
-                        }else if(permissionStateSMS.shouldShowRationale) {
-                            viewModel.onEvent(MainEvent.ContactActivation(false))
-                            switchContact.value = false
-                            showDialogPermissionSMS.value = false
+                    } else if (permissionStateSMS.shouldShowRationale) {
+                        viewModel.onEvent(MainEvent.ContactActivation(false))
+                        switchContact.value = false
+                        showDialogPermissionSMS.value = false
 
-                        }else if (permissionStateSMS.isPermanentlyDenied()) {
-                            viewModel.onEvent(MainEvent.ContactActivation(false))
-                            switchContact.value = false
-                           showDialogPermissionSMS.value = true
+                    } else if (permissionStateSMS.isPermanentlyDenied()) {
+                        viewModel.onEvent(MainEvent.ContactActivation(false))
+                        switchContact.value = false
+                        showDialogPermissionSMS.value = true
 
-                        }
+                    }
                 },
                 switch = switchContact
             )
@@ -465,24 +455,24 @@ fun MainScreen(
 
         showDialogSendSMS.value -> {
 
-                DialogSendSMS(
-                    setShowDialog = { showDialogSendSMS.value = it },
-                    isDone = isDoneSendSMS,
-                    clickableCancel = {
-                        showDialogSendSMS.value = false
-                    })
+            DialogSendSMS(
+                setShowDialog = { showDialogSendSMS.value = it },
+                isDone = isDoneSendSMS,
+                clickableCancel = {
+                    showDialogSendSMS.value = false
+                })
 
 
         }
 
         showDialogPermissionSMS.value -> {
 
-            DialogPermanentlyDenied (
+            DialogPermanentlyDenied(
                 title = "Permission",
                 message = "You need permission to access SMS to send SMS. Follow the steps below:",
                 image = painterResource(id = R.drawable.img_sms_per),
-                setShowDialog = {showDialogPermissionSMS.value = it},
-                clickableDismiss = {showDialogPermissionSMS.value = false}
+                setShowDialog = { showDialogPermissionSMS.value = it },
+                clickableDismiss = { showDialogPermissionSMS.value = false }
             )
 
         }
@@ -492,8 +482,8 @@ fun MainScreen(
                 title = "Permission",
                 message = "You need location permission. Follow the steps below:",
                 image = painterResource(id = R.drawable.img_location),
-                setShowDialog = {showDialogPermissionLocation.value = it},
-                clickableDismiss = {showDialogPermissionLocation.value = false}
+                setShowDialog = { showDialogPermissionLocation.value = it },
+                clickableDismiss = { showDialogPermissionLocation.value = false }
             )
 
         }
