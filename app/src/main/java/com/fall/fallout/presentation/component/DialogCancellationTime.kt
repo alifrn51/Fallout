@@ -17,6 +17,7 @@ fun DialogCancellationTime(
     title: String,
     description: String,
     clickableSave: () -> Unit = {},
+    setShowDialog: (Boolean) -> Unit,
 ) {
 
     Card(
@@ -96,13 +97,3 @@ fun DialogCancellationTime(
 
 }
 
-@Preview
-@Composable
-fun DialogCancellationTimePreview() {
-    FalloutTheme {
-        DialogCancellationTime(
-            title = "Detect Cancellation Time",
-            description = "Choose duration for cancelling detect."
-        )
-    }
-}

@@ -7,4 +7,8 @@ sealed class MainEvent{
     data class UpdateLocation(var latLong: LatLng): MainEvent()
 
     data class SensorActivation(var isEnable: Boolean): MainEvent()
+
+    data class ContactActivation(var isEnable: Boolean): MainEvent()
+
+    object SendSMS: MainEvent()
 }

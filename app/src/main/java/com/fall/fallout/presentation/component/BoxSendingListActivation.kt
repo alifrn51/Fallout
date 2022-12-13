@@ -36,13 +36,9 @@ import com.fall.fallout.ui.theme.*
 fun BoxSendingListActivation(
     modifier: Modifier = Modifier,
     listPerson: List<Person>,
-    switchOnChange: (Boolean) -> Unit
+    switchOnChange: (Boolean) -> Unit,
+    switch : MutableState<Boolean>
 ) {
-
-    val switch = remember {
-            mutableStateOf(false)
-        }
-
     
     Card(
         modifier = modifier

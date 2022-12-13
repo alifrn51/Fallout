@@ -21,12 +21,9 @@ import com.fall.fallout.ui.theme.SMALL_PADDING
 @Composable
 fun BoxSensorActivation(
     modifier: Modifier = Modifier,
-    switchOnChange: (Boolean) -> Unit
+    switchOnChange: (Boolean) -> Unit,
+    switch: MutableState<Boolean>
 ) {
-    val switch = remember {
-            mutableStateOf(false)
-        }
-
 
 
     Card(

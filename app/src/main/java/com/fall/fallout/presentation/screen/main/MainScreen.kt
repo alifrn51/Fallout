@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.location.LocationManager
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -28,15 +29,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.lifecycleScope
-import com.fall.fallout.presentation.component.BoxSendingListActivation
-import com.fall.fallout.presentation.component.BoxSensorActivation
-import com.fall.fallout.presentation.component.ButtonBluer
+import com.fall.fallout.R
+import com.fall.fallout.presentation.component.*
 import com.fall.fallout.presentation.screen.destinations.PersonListScreenDestination
 import com.fall.fallout.presentation.screen.destinations.SettingsScreenDestination
 import com.fall.fallout.ui.theme.BETWEEN_PADDING
@@ -44,9 +45,10 @@ import com.fall.fallout.ui.theme.FalloutTheme
 import com.fall.fallout.ui.theme.SMALL_PADDING
 import com.fall.fallout.utils.isPermanentlyDenied
 import com.fall.fallout.utils.serviceLocation.DefaultLocationClient
-import com.fall.fallout.utils.serviceLocation.LocationService
+import com.fall.fallout.utils.serviceLocation.FallDetectionService
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -54,7 +56,6 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.ramcosta.composedestinations.annotation.Destination
-import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
@@ -65,7 +66,6 @@ import kotlinx.coroutines.launch
 @ExperimentalMaterialApi
 @ExperimentalComposeUiApi
 @ExperimentalPermissionsApi
-@RootNavGraph(start = true)
 @Destination
 @Composable
 fun MainScreen(
@@ -73,6 +73,13 @@ fun MainScreen(
     viewModel: MainViewModel = hiltViewModel()
 ) {
 
+
+    val showDialogFallDetect = remember { mutableStateOf(false) }
+    val showDialogSendSMS = remember { mutableStateOf(false) }
+    val showDialogPermissionSMS = remember { mutableStateOf(false) }
+    val showDialogPermissionLocation = remember { mutableStateOf(false) }
+
+    val isDoneSendSMS = remember { mutableStateOf(true) }
 
     val state = viewModel.state.value
 
@@ -89,6 +96,13 @@ fun MainScreen(
         mutableStateOf(false)
     }
 
+
+    val switchSensor = remember {
+        mutableStateOf(false)
+    }
+    val switchContact = remember {
+        mutableStateOf(false)
+    }
     val gpsState = remember {
         mutableStateOf(false)
     }
@@ -119,6 +133,10 @@ fun MainScreen(
             Manifest.permission.ACCESS_FINE_LOCATION
         )
     )
+    val permissionStateSMS = rememberPermissionState(
+        Manifest.permission.SEND_SMS
+
+    )
 
     val lifecycleOwner = LocalLifecycleOwner.current
 
@@ -127,6 +145,10 @@ fun MainScreen(
         effect = {
             val observer = LifecycleEventObserver { _, event ->
                 if (event == Lifecycle.Event.ON_RESUME) {
+
+                    if(FallDetectionService.fallDetection != null){
+                        switchSensor.value = true
+                    }
                     permissionState.launchMultiplePermissionRequest()
 
                     if (permissionFindLocationGranted &&
@@ -199,7 +221,10 @@ fun MainScreen(
                     }
 
                     prem.isPermanentlyDenied() -> {
-
+                        if (!showDialogPermissionLocation.value) {
+                            Log.i("TAG", "MainScreen: locationdenisdlfas")
+                            showDialogPermissionLocation.value = true
+                        }
                     }
                 }
 
@@ -264,9 +289,21 @@ fun MainScreen(
                 .align(Alignment.TopCenter),
             switchOnChange = {
                 viewModel.onEvent(MainEvent.SensorActivation(it))
-            }
+            },
+            switch = switchSensor
         )
 
+
+
+        FallDetectionService.fallDetection?.isFallDetect?.observe(lifecycleOwner) { isFall ->
+            //Log.i("TAG", "MainScreen: Fall Shode $isFall")
+            if (isFall) {
+
+                if (!showDialogFallDetect.value && !showDialogSendSMS.value)
+                    showDialogFallDetect.value = true
+
+            }
+        }
 
 
 
@@ -356,9 +393,33 @@ fun MainScreen(
 
             Spacer(modifier = Modifier.height(BETWEEN_PADDING))
 
-            BoxSendingListActivation(listPerson = state.persons){
+            BoxSendingListActivation(
+                listPerson = state.persons,
+                switchOnChange = { it ->
+                    permissionStateSMS.launchPermissionRequest()
 
-            }
+                    when {
+                        permissionStateSMS.hasPermission -> {
+                            switchContact.value = true
+                            viewModel.onEvent(MainEvent.ContactActivation(it))
+
+                        }
+
+                        permissionStateSMS.shouldShowRationale -> {
+                            viewModel.onEvent(MainEvent.ContactActivation(false))
+                            switchContact.value = false
+                        }
+
+                        permissionStateSMS.isPermanentlyDenied() -> {
+                            viewModel.onEvent(MainEvent.ContactActivation(false))
+                            switchContact.value = false
+                           showDialogPermissionSMS.value = true
+
+                        }
+                    }
+                },
+                switch = switchContact
+            )
         }
 
     }
@@ -375,9 +436,68 @@ fun MainScreen(
     }
 
     state.switchSensor.let {
-        Intent(context, LocationService::class.java).apply {
-            action = if (it) LocationService.ACTION_START else LocationService.ACTION_STOP
+        Intent(context, FallDetectionService::class.java).apply {
+            action = if (it) FallDetectionService.ACTION_START else FallDetectionService.ACTION_STOP
             context.startService(this)
+        }
+
+    }
+
+    when {
+
+        showDialogFallDetect.value -> {
+
+            DialogFallDetect(
+                title = "Delete Person",
+                clickableIamOk = {
+                    showDialogFallDetect.value = false
+                },
+                setShowDialog = { showDialogFallDetect.value = it },
+                totalTime = 10,
+                expiredTime = {
+                    showDialogFallDetect.value = false
+                    //Send SMS
+                    if (state.switchContact) {
+                        showDialogSendSMS.value = true
+                        viewModel.onEvent(MainEvent.SendSMS)
+                    }
+
+                }
+            )
+        }
+
+        showDialogSendSMS.value -> {
+
+            DialogSendSMS(
+                setShowDialog = { showDialogSendSMS.value = it },
+                isDone = isDoneSendSMS,
+                clickableCancel = {
+                    showDialogSendSMS.value = false
+                })
+
+        }
+
+        showDialogPermissionSMS.value -> {
+
+            DialogPermanentlyDenied(
+                title = "Permission",
+                message = "You need permission to access SMS to send SMS. Follow the steps below:",
+                image = painterResource(id = R.drawable.img_sms_per),
+                setShowDialog = {showDialogPermissionSMS.value = it},
+                clickableDismiss = {showDialogPermissionSMS.value = false}
+            )
+
+        }
+        showDialogPermissionLocation.value -> {
+
+            DialogPermanentlyDenied(
+                title = "Permission",
+                message = "You need location permission. Follow the steps below:",
+                image = painterResource(id = R.drawable.img_location),
+                setShowDialog = {showDialogPermissionLocation.value = it},
+                clickableDismiss = {showDialogPermissionLocation.value = false}
+            )
+
         }
     }
 

@@ -32,7 +32,7 @@ fun SettingsScreen(
 
     var itemSettings = listOf(
         Setting(title = "Cancellation Time", icon = Icons.Outlined.Timer),
-        Setting(title = "Alarm", icon = Icons.Default.Alarm)
+        //Setting(title = "Alarm", icon = Icons.Default.Alarm)
     )
 
     val context = LocalContext.current
