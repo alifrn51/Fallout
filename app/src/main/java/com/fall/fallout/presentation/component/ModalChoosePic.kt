@@ -87,7 +87,7 @@ fun ModalChoosePic(
 
                     }
 
-                    //Spacer(modifier = Modifier.width(LARGE_PADDING))
+                    /*//Spacer(modifier = Modifier.width(LARGE_PADDING))
                     IconButton(onClick = {
 
                         scope.launch {
@@ -114,7 +114,7 @@ fun ModalChoosePic(
 
                         }
 
-                    }
+                    }*/
 
                 }
 

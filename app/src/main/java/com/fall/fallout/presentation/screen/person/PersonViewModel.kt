@@ -46,7 +46,23 @@ class PersonViewModel @Inject constructor(
             }
             is PersonListEvent.EditPerson -> {
                 viewModelScope.launch {
-                    personsUseCase.updatePersonUseCase(person = state.value.personSelected?:return@launch)
+                    try {
+                        personsUseCase.updatePersonUseCase(
+                            person = Person(
+                                fullName = event.fullName,
+                                phoneNumber = event.phoneNumber,
+                                image = event.image
+                            )
+                        )
+
+                        _state.value = state.value.copy(persons = personsUseCase.getPersonsUseCase().stateIn(viewModelScope).value)
+
+                        _eventFlow.emit(UiEvent.EditPerson)
+                    }catch (e: InvalidPersonException){
+                        _eventFlow.emit(UiEvent.ShowSnackbar(
+                            message = e.message ?: "Couldn't add contact"
+                        ))
+                    }
                 }
             }
 

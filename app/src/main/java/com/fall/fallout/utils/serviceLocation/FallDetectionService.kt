@@ -1,15 +1,12 @@
 package com.fall.fallout.utils.serviceLocation
 
-import android.app.Notification
 import android.app.NotificationManager
-import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.os.Binder
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.LifecycleService
@@ -20,17 +17,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 
-class FallDetectionService :  SensorEventListener, LifecycleService() {
+class FallDetectionService : SensorEventListener, LifecycleService() {
 
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private lateinit var locationClient: LocationClient
 
     //sensor acceleration
-    private var  sensorManager: SensorManager? = null
-    private var acceleration: Sensor? =null
+    private var sensorManager: SensorManager? = null
+    private var acceleration: Sensor? = null
     private var range = 0
 
     override fun onBind(intent: Intent): IBinder? {
@@ -51,12 +46,17 @@ class FallDetectionService :  SensorEventListener, LifecycleService() {
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
 
-        fallDetection?.isFallDetect?.observe(this ){ isFall ->
+        fallDetection?.isFallDetect?.observe(this) { isFall ->
 
 
-            if (isFall){
-                notificationManager.notify(Constants.NOTIFICATION_FALL_ID,  createNotificationForService().setContentText("Fall detected!").build())
+            if (isFall) {
+                notificationManager.notify(
+                    Constants.NOTIFICATION_FALL_ID,
+                    createNotificationForService().setContentText("Fall detected!").build()
+                )
+
             }
+
 
         }
 
@@ -65,9 +65,9 @@ class FallDetectionService :  SensorEventListener, LifecycleService() {
 
     }
 
-    private fun createNotificationForService(): NotificationCompat.Builder{
+    private fun createNotificationForService(): NotificationCompat.Builder {
 
-        return  NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
+        return NotificationCompat.Builder(this, Constants.NOTIFICATION_CHANNEL_ID)
             .setContentTitle("Fallout")
             .setContentText("The application is running...!")
             .setSmallIcon(R.drawable.ic_logo)
@@ -84,9 +84,6 @@ class FallDetectionService :  SensorEventListener, LifecycleService() {
     }
 
     private fun start() {
-
-
-
 
 
         /*locationClient.getLocationUpdates()
@@ -110,7 +107,6 @@ class FallDetectionService :  SensorEventListener, LifecycleService() {
         stopSelf()
 
     }
-
 
 
     override fun onDestroy() {

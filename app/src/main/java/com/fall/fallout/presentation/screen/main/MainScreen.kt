@@ -253,7 +253,7 @@ fun MainScreen(
 
             if (gpsState.value || isGpsEnabled) {
 
-                rememberCoroutineScope {
+                LaunchedEffect(key1 = gpsState.value) {
 
                     locationClient.getLocationUpdates()
                         .catch { e -> e.printStackTrace() }
@@ -398,25 +398,23 @@ fun MainScreen(
                 switchOnChange = { it ->
                     permissionStateSMS.launchPermissionRequest()
 
-                    when {
-                        permissionStateSMS.hasPermission -> {
-                            switchContact.value = true
+                        if(permissionStateSMS.hasPermission) {
+
+                            switchContact.value = it
                             viewModel.onEvent(MainEvent.ContactActivation(it))
+                            showDialogPermissionSMS.value = false
 
-                        }
-
-                        permissionStateSMS.shouldShowRationale -> {
+                        }else if(permissionStateSMS.shouldShowRationale) {
                             viewModel.onEvent(MainEvent.ContactActivation(false))
                             switchContact.value = false
-                        }
+                            showDialogPermissionSMS.value = false
 
-                        permissionStateSMS.isPermanentlyDenied() -> {
+                        }else if (permissionStateSMS.isPermanentlyDenied()) {
                             viewModel.onEvent(MainEvent.ContactActivation(false))
                             switchContact.value = false
                            showDialogPermissionSMS.value = true
 
                         }
-                    }
                 },
                 switch = switchContact
             )
@@ -448,7 +446,6 @@ fun MainScreen(
         showDialogFallDetect.value -> {
 
             DialogFallDetect(
-                title = "Delete Person",
                 clickableIamOk = {
                     showDialogFallDetect.value = false
                 },
@@ -457,7 +454,7 @@ fun MainScreen(
                 expiredTime = {
                     showDialogFallDetect.value = false
                     //Send SMS
-                    if (state.switchContact) {
+                    if (state.switchContact && state.persons.isNotEmpty()) {
                         showDialogSendSMS.value = true
                         viewModel.onEvent(MainEvent.SendSMS)
                     }
@@ -468,18 +465,19 @@ fun MainScreen(
 
         showDialogSendSMS.value -> {
 
-            DialogSendSMS(
-                setShowDialog = { showDialogSendSMS.value = it },
-                isDone = isDoneSendSMS,
-                clickableCancel = {
-                    showDialogSendSMS.value = false
-                })
+                DialogSendSMS(
+                    setShowDialog = { showDialogSendSMS.value = it },
+                    isDone = isDoneSendSMS,
+                    clickableCancel = {
+                        showDialogSendSMS.value = false
+                    })
+
 
         }
 
         showDialogPermissionSMS.value -> {
 
-            DialogPermanentlyDenied(
+            DialogPermanentlyDenied (
                 title = "Permission",
                 message = "You need permission to access SMS to send SMS. Follow the steps below:",
                 image = painterResource(id = R.drawable.img_sms_per),

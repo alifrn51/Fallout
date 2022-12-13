@@ -21,6 +21,7 @@ import com.fall.fallout.presentation.component.DialogMessage
 import com.fall.fallout.presentation.component.ItemPerson
 import com.fall.fallout.presentation.component.ToolbarApplication
 import com.fall.fallout.presentation.screen.destinations.AddPersonScreenDestination
+import com.fall.fallout.presentation.screen.destinations.EditPersonScreenDestination
 import com.fall.fallout.ui.theme.*
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.ramcosta.composedestinations.annotation.Destination
@@ -106,6 +107,7 @@ fun PersonListScreen(
                             },
                             onClickEditItemPerson = {
 
+                                navigator.navigate(EditPersonScreenDestination(person = person))
                             }
                         )
                     }

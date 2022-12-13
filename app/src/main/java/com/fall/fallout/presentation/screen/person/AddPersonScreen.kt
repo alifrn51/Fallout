@@ -150,7 +150,7 @@ fun AddPersonScreen(
 
 
 
-            cameraLauncher.launch(Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE))
+           // cameraLauncher.launch(Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE))
 
 
 

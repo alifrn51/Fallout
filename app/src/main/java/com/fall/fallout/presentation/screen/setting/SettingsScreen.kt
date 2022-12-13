@@ -30,7 +30,7 @@ fun SettingsScreen(
     navigator: DestinationsNavigator,
 ) {
 
-    var itemSettings = listOf(
+    val itemSettings = listOf(
         Setting(title = "Cancellation Time", icon = Icons.Outlined.Timer),
         //Setting(title = "Alarm", icon = Icons.Default.Alarm)
     )
@@ -38,7 +38,7 @@ fun SettingsScreen(
     val context = LocalContext.current
 
 
-    var scaffoldState = rememberScaffoldState()
+    val scaffoldState = rememberScaffoldState()
     Scaffold(
         scaffoldState = scaffoldState
     ) {
